@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Nivan-22/rssagg/internal/database"
+
 	"github.com/google/uuid"
 )
 
@@ -24,18 +25,29 @@ func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, r *http.Reques
 		respondWithError(w, 400, fmt.Sprintf("Error in parsing json:%v", err))
 		return
 	}
-	feed, err := apiCfg.DB.CreateFeed(r.Context(), database.CreateFeedParams{
+	feed, err := apiCfg.DB.Createfeed(r.Context(), database.CreatefeedParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		Name:      params.Name,
 		Url:       params.URL,
-		UserId:    user.ID,
+		UserID:    user.ID,
 	})
 	if err != nil {
 		respondWithError(w, 400, fmt.Sprintf("Error in creating feed:%v and %v", err, user))
 		return
 	}
 
-	respondWithJSON(w, 201, databaseUserToUser(feed))
+	respondWithJSON(w, 201, databasefeedtoFeed(feed))
+}
+
+func (apiCfg *apiConfig) handlerGetFeeds(w http.ResponseWriter, r *http.Request) {
+	
+	feeds, err := apiCfg.DB.Getfeeds(r.Context())
+	if err != nil {
+		respondWithError(w, 400, fmt.Sprintf("Error in creating feed:%v ", err))
+		return
+	}
+
+	respondWithJSON(w, 201, databasefeedstoFeeds(feeds))
 }
